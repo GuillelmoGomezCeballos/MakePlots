@@ -1,0 +1,388 @@
+#include <TAxis.h>
+#include <TCanvas.h>
+#include <TFrame.h>
+#include <TGraphAsymmErrors.h>
+#include <TLatex.h>
+#include <TLegend.h>
+#include <TLine.h>
+#include <TString.h>
+#include <TSystem.h>
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+#include "tdrstyle.C"
+#include "CMS_lumi.C"
+
+double mH_exclTH[8] = {500, 600, 700, 800, 900, 1000, 1000, 700};
+double shExclTH[8] = {1.1928,0.9709,0.8204,0.7113, 0.6282, 0.5628, 1., 1.};
+
+Bool_t verbose = false;
+
+void DrawTLatex(Double_t x, Double_t y, Double_t tsize, const char* text);
+
+void PlotLimitForVBS_run1(string  limitFiles   = "inputs/ana_ICHEP_limits_nj_shape7teV_cut8TeV.txt",
+	       string  outputPrefix = "combined",
+	       Float_t mhmin        = 110,
+	       Float_t mhmax        = 160,
+	       Int_t   setLogx      = 0,
+	       Int_t   setLogy      = 1,
+	       string  title        = "H #rightarrow WW #rightarrow 2l2#nu",
+	       Bool_t  drawObserved = 1,
+	       Int_t   ratio        = 0,
+	       string  format       = "pdf")
+{
+  setTDRStyle();
+
+  gSystem->mkdir(format.c_str(), kTRUE);
+
+  // Get input files
+  //----------------------------------------------------------------------------
+  stringstream fnames(limitFiles);
+  string fname;
+  vector<string> LimitFile;
+
+  while (getline(fnames, fname, ',')) {
+    if (verbose) printf(" Using file(s) %s\n", fname.c_str());
+    LimitFile.push_back(fname);
+  }
+
+
+  // Read in the nominal limits
+  //----------------------------------------------------------------------------
+  vector<float> vMass;
+  vector<float> vObsLimit; 
+  vector<float> vTheoryLimit0; 
+  vector<float> vTheoryLimit1; 
+  vector<float> vTheoryLimit2; 
+  vector<float> vMedianExpLimit; 
+  vector<float> vExpLim68Down; 
+  vector<float> vExpLim68Up; 
+  vector<float> vExpLim95Down; 
+  vector<float> vExpLim95Up;
+
+  float Mass;
+  float ObsLimit; 
+  float TheoryLimit0; 
+  float TheoryLimit1; 
+  float TheoryLimit2; 
+  float MedianExpLimit; 
+  float ExpLim68Down; 
+  float ExpLim68Up; 
+  float ExpLim95Down; 
+  float ExpLim95Up;
+
+  ifstream indata;
+  indata.open(LimitFile[0].c_str());
+  if (!indata) {
+    cerr << " Error: file could not be opened" << endl;
+    return;
+  }
+
+  while (indata
+	 >> Mass
+	 >> ObsLimit
+	 >> TheoryLimit0
+	 >> TheoryLimit1
+	 >> TheoryLimit2
+	 >> MedianExpLimit
+	 >> ExpLim95Down
+	 >> ExpLim68Down
+	 >> ExpLim68Up
+	 >> ExpLim95Up) {
+
+    vMass          .push_back(Mass);
+    vObsLimit      .push_back(ObsLimit); 
+    vTheoryLimit0  .push_back(TheoryLimit0); 
+    vTheoryLimit1  .push_back(TheoryLimit1); 
+    vTheoryLimit2  .push_back(TheoryLimit2); 
+    vMedianExpLimit.push_back(MedianExpLimit); 
+    vExpLim68Down  .push_back(ExpLim68Down); 
+    vExpLim68Up    .push_back(ExpLim68Up); 
+    vExpLim95Down  .push_back(ExpLim95Down); 
+    vExpLim95Up    .push_back(ExpLim95Up);
+  }
+
+  UInt_t npoints = vMass.size();
+
+
+  // Draw
+  //----------------------------------------------------------------------------
+  TString ctitle = Form("%s_from%.0fto%.0f_logx%d_logy%d",
+			outputPrefix.c_str(),
+			mhmin,
+			mhmax,
+			setLogx,
+			setLogy);
+
+  //TCanvas* canvas = new TCanvas(ctitle, ctitle);
+  TCanvas* canvas = new TCanvas(ctitle, ctitle, 600, 600, 600, 600);
+
+  canvas->SetLeftMargin  (1.30 * canvas->GetLeftMargin());
+  canvas->SetRightMargin (2.10 * canvas->GetRightMargin());
+  canvas->SetBottomMargin(1.35 * canvas->GetBottomMargin());
+
+  canvas->SetLogx(setLogx);
+  canvas->SetLogy(setLogy);
+
+  float min = +9999;
+  float max = -9999;
+
+  // Expected Limit
+  //----------------------------------------------------------------------------
+  float y_th0[npoints];
+  float y_th1[npoints];
+  float y_th2[npoints];
+  float x    [npoints];
+  float ex   [npoints];
+  float y    [npoints];
+  float yu68 [npoints];
+  float yd68 [npoints];
+  float yu95 [npoints];
+  float yd95 [npoints]; 
+  
+  for (UInt_t i=0; i<npoints; ++i) {
+
+    x [i] = vMass.at(i);
+    ex[i] = 0; 
+
+    y_th0[i] = vTheoryLimit0.at(i);
+    y_th1[i] = vTheoryLimit1.at(i);
+    y_th2[i] = vTheoryLimit2.at(i);
+    y   [i]  = vMedianExpLimit.at(i);
+    yu68[i]  = vExpLim68Up.at(i) - y[i];
+    yu95[i]  = vExpLim95Up.at(i) - y[i];   
+    yd68[i]  = y[i] - vExpLim68Down.at(i);  
+    yd95[i]  = y[i] - vExpLim95Down.at(i);  
+
+    if (y[i] + yu95[i] > max) max = y[i] + yu95[i];
+    if (y[i] - yd95[i] < min) min = y[i] - yd95[i];
+  }
+  if(setLogy == 0) min =0.01;
+
+  TGraph*            ExpTheory0 = new TGraph           (npoints, x, y_th0);
+  TGraph*            ExpTheory1 = new TGraph           (npoints, x, y_th1);
+  TGraph*            ExpTheory2 = new TGraph           (npoints, x, y_th2);
+  TGraph*            ExpLim     = new TGraph           (npoints, x, y);
+  TGraphAsymmErrors* ExpBand95  = new TGraphAsymmErrors(npoints, x, y, ex, ex, yd95, yu95);
+  TGraphAsymmErrors* ExpBand68  = new TGraphAsymmErrors(npoints, x, y, ex, ex, yd68, yu68);
+
+  ExpBand95->GetXaxis()->SetRangeUser(mhmin, mhmax);
+
+  // Cosmetics
+  //----------------------------------------------------------------------------
+  ExpBand95->SetTitle("");
+
+  ExpBand95->GetXaxis()->SetTitle("m_{H^{#pm#pm}} (GeV)");
+    
+  if (ratio == 0) ExpBand95->GetYaxis()->SetTitle("S_{H}");
+  if (ratio == 5) ExpBand95->GetYaxis()->SetTitle("#sigma_{VBF}(H^{#pm#pm}) #it{B}(H^{#pm#pm} #rightarrow W^{#pm}W^{#pm}) (fb)");
+
+  ExpBand95->GetXaxis()->SetTitleSize  (0.05);
+  ExpBand95->GetYaxis()->SetTitleSize  (0.05);
+  ExpBand95->GetXaxis()->SetLabelSize  (0.04);
+  ExpBand95->GetXaxis()->SetTitleOffset(1.05);
+  ExpBand95->GetYaxis()->SetTitleOffset(1.30);
+  ExpBand95->GetYaxis()->SetNdivisions(505);
+
+  //ExpBand68->SetFillColor(211); 
+  ExpBand68->SetFillColor(kGreen+1); 
+  ExpBand68->SetLineColor( 10);
+
+  //ExpBand95->SetFillColor(90); 
+  ExpBand95->SetFillColor(kOrange); 
+  ExpBand95->SetLineColor(10);
+
+  ExpTheory0->SetLineStyle(9);
+  ExpTheory0->SetLineWidth(3);
+  ExpTheory0->SetLineColor(9);
+
+  ExpTheory1->SetLineStyle(8);
+  ExpTheory1->SetLineWidth(3);
+  ExpTheory1->SetLineColor(2);
+
+  ExpTheory2->SetLineStyle(6);
+  ExpTheory2->SetLineWidth(3);
+  ExpTheory2->SetLineColor(6);
+
+  ExpLim->SetLineStyle(2);
+  ExpLim->SetLineWidth(2);
+
+  ExpBand95 ->Draw("a3");
+  ExpBand68 ->Draw("3");
+  ExpLim    ->Draw("l");
+  //ExpTheory0->Draw("l");
+  //ExpTheory1->Draw("l");
+  //ExpTheory2->Draw("l");
+
+  // Observed limit
+  //----------------------------------------------------------------------------
+  TGraph* ObsLim = NULL;
+
+  if (drawObserved) {
+
+    float yObs[npoints];    
+
+    for (UInt_t i=0; i<npoints; ++i) {
+
+      yObs[i] = vObsLimit.at(i);
+
+      if (yObs[i] > max) max = yObs[i];
+      if (yObs[i] < min) min = yObs[i];
+    }
+
+    ObsLim = new TGraph(npoints, x, yObs);
+    ObsLim->SetLineWidth(4);
+    ObsLim->SetMarkerStyle(kFullCircle);
+    ObsLim->Draw("l");
+  }
+
+
+  // y-axis
+  //----------------------------------------------------------------------------
+  if(ratio == 0) max = 0;
+  if (canvas->GetLogy())
+    ExpBand95->GetYaxis()->SetRangeUser(0.03, max+400);
+  else
+    ExpBand95->GetYaxis()->SetRangeUser(min-0.0, max+1);
+
+
+  // canvas dimensions
+  //----------------------------------------------------------------------------
+  canvas->Update();
+
+  Float_t uxmin = canvas->GetUxmin();
+  Float_t uxmax = canvas->GetUxmax();
+  Float_t uymin = canvas->GetUymin();
+
+
+  // x-axis ticks
+  //----------------------------------------------------------------------------
+  if (canvas->GetLogx()) {
+
+    ExpBand95->GetXaxis()->SetNdivisions(0);
+
+    TLine tick;
+
+    tick.SetLineWidth(1);
+    tick.SetLineColor(1);
+
+    for (Int_t i=100; i<=600; i+=10) {
+	
+      if (i < mhmin || i > mhmax) continue;
+
+      Float_t xx = i;
+
+      if (canvas->GetLogy())
+	tick.DrawLine(xx, pow(10,uymin), xx, pow(10,uymin) + (i%100 == 0 ? 0.025 : 0.005));
+      else
+	tick.DrawLine(xx, uymin, xx, uymin + (i%100 == 0 ? 0.75 : 0.3));
+    }
+
+    // TLatex
+    //--------------------------------------------------------------------------
+    Float_t ylatex = (canvas->GetLogy()) ? pow(10,uymin) - 0.01 : uymin - 0.75;
+
+    Float_t xbins[6] = {100, 200, 300, 400, 500, 600};
+
+    while (mhmin > xbins[0]) xbins[0] += 10;
+
+    for (Int_t i=0; i<6; i++) {
+      
+      if (xbins[i] < mhmin || xbins[i] > mhmax) continue;
+    
+      TLatex* latex = new TLatex(xbins[i], ylatex, Form("%.0f", xbins[i]));
+      
+      latex->SetTextAlign(  22);
+      latex->SetTextFont (  42);
+      latex->SetTextSize (0.040);
+    
+      latex->Draw("same");
+    }
+  }
+
+  // Cosmetics
+  //----------------------------------------------------------------------------
+  //DrawTLatex(0.94, 0.850, 0.050, "CMS preliminary");
+  //DrawTLatex(0.94, 0.850, 0.032, "CMS");
+  //DrawTLatex(0.94, 0.795, 0.032, title.c_str());
+  //DrawTLatex(0.21, 0.94, 0.04, "#bf{CMS}");
+  //DrawTLatex(0.35, 0.94, 0.04, "#bf{CMS} #scale[0.7]{#it{Preliminary}}");
+  DrawTLatex(0.50, 0.95, 0.04, title.c_str());
+
+  TLegend* leg = new TLegend(0.30, 0.65, 0.50, 0.85, "");
+
+  leg->SetBorderSize(    0);
+  leg->SetFillColor (    0);
+  leg->SetFillStyle (    0);
+  leg->SetTextFont  (   42);
+  leg->SetTextSize  (0.040);
+
+  TGraph *ExclTH = new TGraph(8,mH_exclTH,shExclTH);
+  ExclTH->SetFillColor(kBlue-7);
+  ExclTH->SetFillStyle(3001);
+
+  if(ObsLim != NULL)
+  leg->AddEntry(ObsLim,     " Observed",                                          "l");
+  leg->AddEntry(ExpLim,     " Median expected",                                   "l");
+  leg->AddEntry(ExpBand68,  " 68% expected",                                      "f");
+  leg->AddEntry(ExpBand95,  " 95% expected",                                      "f");
+  if(ratio == 0) leg->AddEntry(ExclTH,  " #Gamma_{H^{#pm#pm}} / m_{H^{#pm#pm}} > 0.1",                              "f");
+  //leg->AddEntry(ExpTheory2, " vev = 35 GeV","l");
+  //leg->AddEntry(ExpTheory1, " vev = 25 GeV","l");
+ // leg->AddEntry(ExpTheory0, " vev = 16 GeV","l");
+
+  leg->Draw("same");
+
+  if(ratio == 0) ExclTH->Draw("FL");
+
+  CMS_lumi( canvas, 4, 12 );
+
+  // Unit line
+  //----------------------------------------------------------------------------
+  canvas->Update();
+
+  if (!ratio) {
+
+    TLine *line = NULL;
+
+    if (canvas->GetLogx())
+      line = new TLine(pow(10,uxmin), 1, pow(10,uxmax), 1);
+    else
+      line = new TLine(uxmin, 1, uxmax, 1);
+
+    line->SetLineColor(kRed+1);
+    line->SetLineWidth(2);
+    line->Draw("same");
+
+    if(ObsLim != NULL)
+    ObsLim->Draw("same");
+  }
+    
+
+  // Save
+  //----------------------------------------------------------------------------
+  canvas->GetFrame()->DrawClone();
+  canvas->RedrawAxis();
+  canvas->Update();
+
+  canvas->SaveAs(Form("%s/%s.%s", format.c_str(), ctitle.Data(), format.c_str()));
+}
+
+
+//------------------------------------------------------------------------------
+// DrawTLatex
+//------------------------------------------------------------------------------
+void DrawTLatex(Double_t x, Double_t y, Double_t tsize, const char* text)
+{
+  TLatex* tl = new TLatex(x, y, text);
+
+  tl->SetNDC();
+  tl->SetTextAlign(   32);
+  tl->SetTextFont (   42);
+  tl->SetTextSize (tsize);
+
+  tl->Draw("same");
+}

@@ -692,9 +692,9 @@ void finalPlot(int nsel = 0, int ReBin = 1, TString XTitle = "N_{jets}", TString
   bool showPulls = false;
   bool useGarwood = false;
   if(showPulls) atributes(hRatio,XTitle.Data(),"Pull",units.Data());
-  else          atributes(hRatio,XTitle.Data(),"Data/SM",units.Data());
+  else          atributes(hRatio,XTitle.Data(),"Data/Pred.",units.Data());
   if(showPulls) atributes(hBand,XTitle.Data(),"Pull",units.Data());
-  else          atributes(hBand,XTitle.Data(),"Data/SM",units.Data());
+  else          atributes(hBand,XTitle.Data(),"Data/Pred.",units.Data());
 
   TGraphAsymmErrors *gStatic = new TGraphAsymmErrors(hDataDivision);
   TGraphAsymmErrors *g = new TGraphAsymmErrors(hRatio);

@@ -302,7 +302,7 @@ void PlotLimit_ZHinv_run2(
   }
   else {
     theRange[0] = min-0.0; theRange[1] = max+1;
-    if(ratio == 12) theRange[1] = max+0.05; 
+    if(ratio == 12) {theRange[0] = 0.0; theRange[1] = max+0.05;}
     if      (ratio == 6 || ratio == 2) {theRange[0] = min-0.0; theRange[1] = max+0.4;}
     else if (ratio == 7)               {theRange[0] = min-0.0; theRange[1] = max+10;}
     else if (ratio == 8)               {theRange[0] = min-0.0; theRange[1] = max+10;}

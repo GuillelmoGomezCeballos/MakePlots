@@ -58,12 +58,14 @@ void PlotEfficiency(
   vector<float> vTest1; 
   vector<float> vTest2; 
   vector<float> vTest3; 
+  vector<float> vTest4; 
 
   float Mass;
   float Test0;
   float Test1;
   float Test2;
   float Test3;
+  float Test4;
 
   ifstream indata;
   indata.open(LimitFile[0].c_str());
@@ -77,13 +79,15 @@ void PlotEfficiency(
 	 >> Test0
 	 >> Test1
 	 >> Test2
-	 >> Test3) {
+	 >> Test3
+	 >> Test4) {
 
     vMass .push_back(Mass);
     vTest0.push_back(Test0); 
     vTest1.push_back(Test1); 
     vTest2.push_back(Test2); 
     vTest3.push_back(Test3); 
+    vTest4.push_back(Test4); 
   }
 
   UInt_t npoints = vMass.size();
@@ -119,12 +123,14 @@ void PlotEfficiency(
   float y_test1 [npoints];
   float y_test2 [npoints];
   float y_test3 [npoints];
+  float y_test4 [npoints];
   float ey_test0[npoints];
   float ey_test1[npoints];
   float ey_test2[npoints];
   float ey_test3[npoints];
+  float ey_test4[npoints];
   float rel_unc = 0;
-  if(ratio == 2) rel_unc = 0.15;
+  if(ratio == 2) rel_unc = 0.10;
 
   for (UInt_t i=0; i<npoints; ++i) {
 
@@ -135,27 +141,32 @@ void PlotEfficiency(
     y_test1[i] = vTest1.at(i);
     y_test2[i] = vTest2.at(i);
     y_test3[i] = vTest3.at(i);
+    y_test4[i] = vTest4.at(i);
 
     ey_test0[i] = vTest0.at(i)*rel_unc;
     ey_test1[i] = vTest1.at(i)*rel_unc;
     ey_test2[i] = vTest2.at(i)*rel_unc;
     ey_test3[i] = vTest3.at(i)*rel_unc;
+    ey_test4[i] = vTest4.at(i)*rel_unc;
 
     if (y_test0[i] > max && y_test0[i] < theMax) max = y_test0[i];
     if (y_test1[i] > max && y_test1[i] < theMax) max = y_test1[i];
     if (y_test2[i] > max && y_test2[i] < theMax) max = y_test2[i];
     if (y_test3[i] > max && y_test3[i] < theMax) max = y_test3[i];
+    if (y_test4[i] > max && y_test4[i] < theMax) max = y_test4[i];
 
     if (y_test0[i] < min) min = y_test0[i];
     if (y_test1[i] < min) min = y_test1[i];
     if (y_test2[i] < min) min = y_test2[i];
     if (y_test3[i] < min) min = y_test3[i];
+    if (y_test4[i] < min) min = y_test4[i];
   }
 
   TGraphErrors* ExpTest0 = new TGraphErrors(npoints, x, y_test0, ex, ey_test0);
   TGraphErrors* ExpTest1 = new TGraphErrors(npoints, x, y_test1, ex, ey_test1);
   TGraphErrors* ExpTest2 = new TGraphErrors(npoints, x, y_test2, ex, ey_test2);
   TGraphErrors* ExpTest3 = new TGraphErrors(npoints, x, y_test3, ex, ey_test3);
+  TGraphErrors* ExpTest4 = new TGraphErrors(npoints, x, y_test4, ex, ey_test4);
 
   ExpTest0->GetXaxis()->SetRangeUser(mhmin, mhmax);
 
@@ -163,18 +174,18 @@ void PlotEfficiency(
   //----------------------------------------------------------------------------
   ExpTest0->SetTitle("");
 
-  if   (ratio == 0) ExpTest0->GetXaxis()->SetTitle("m_{H} [GeV]");
-  else              ExpTest0->GetXaxis()->SetTitle("m_{H} [GeV]");
+  if   (ratio == 2) ExpTest0->GetXaxis()->SetTitle("m_{H_{5}} [GeV]");
+  else              ExpTest0->GetXaxis()->SetTitle("m_{H_{5}} [GeV]");
 
   if     (ratio == 0 || ratio == 1) ExpTest0->GetYaxis()->SetTitle("Expected limit ratio w.r.t. to default");
-  else if(ratio == 2)               ExpTest0->GetYaxis()->SetTitle("Efficiency");
+  else if(ratio == 2)               ExpTest0->GetYaxis()->SetTitle("Acceptance #times efficiency");
 
   ExpTest0->GetXaxis()->SetLabelFont  (   42);
   ExpTest0->GetXaxis()->SetLabelOffset(0.010);
   ExpTest0->GetXaxis()->SetLabelSize  (0.040);
   ExpTest0->GetXaxis()->SetNdivisions (  505);
   ExpTest0->GetXaxis()->SetTitleFont  (   42);
-  ExpTest0->GetXaxis()->SetTitleOffset(  0.9);
+  ExpTest0->GetXaxis()->SetTitleOffset(  1.0);
   ExpTest0->GetXaxis()->SetTitleSize  (0.050);
   ExpTest0->GetYaxis()->SetLabelFont  (   42);
   ExpTest0->GetYaxis()->SetLabelOffset(0.010);
@@ -184,22 +195,31 @@ void PlotEfficiency(
   ExpTest0->GetYaxis()->SetTitleSize  (0.050);
   ExpTest0->GetYaxis()->SetTitleOffset( 1.25);
 
-  ExpTest1->SetLineStyle(4);
-  ExpTest1->SetLineWidth(4);
-  ExpTest1->SetLineColor(9);
+  ExpTest0->SetLineStyle(1);
+  ExpTest0->SetLineWidth(4);
+  ExpTest0->SetLineColor(1);
 
-  ExpTest2->SetLineStyle(4);
+  ExpTest1->SetLineStyle(2);
+  ExpTest1->SetLineWidth(4);
+  ExpTest1->SetLineColor(2);
+
+  ExpTest2->SetLineStyle(3);
   ExpTest2->SetLineWidth(4);
-  ExpTest2->SetLineColor(8);
+  ExpTest2->SetLineColor(3);
 
   ExpTest3->SetLineStyle(4);
   ExpTest3->SetLineWidth(4);
   ExpTest3->SetLineColor(4);
 
+  ExpTest4->SetLineStyle(6);
+  ExpTest4->SetLineWidth(4);
+  ExpTest4->SetLineColor(6);
+
   ExpTest0->Draw("");
   ExpTest1->Draw("l,same");
   ExpTest2->Draw("l,same");
   ExpTest3->Draw("l,same");
+  ExpTest4->Draw("l,same");
 
   // y-axis
   //----------------------------------------------------------------------------
@@ -225,7 +245,7 @@ void PlotEfficiency(
 
   double legX1 = 0.40; double legX2 = 0.70;
   double legY1 = 0.66; double legY2 = 0.88;
-  double size = 0.035;
+  double size = 0.030;
   TString label = "TEST";
   if     (ratio == 0) label = "H^{++} search";
   else if(ratio == 1) label = "H^{+} search";
@@ -244,10 +264,11 @@ void PlotEfficiency(
   }
 
   if     (ratio == 0 || ratio == 1){
-    leg->AddEntry(ExpTest0, " Test0: BDT instead of m_{jj}", "l");
-    leg->AddEntry(ExpTest1, " Test1: reducing m_{T} bins", "l");
-    leg->AddEntry(ExpTest2, " Test2: increasing m_{T} bins", "l");
-    leg->AddEntry(ExpTest3, " Test3: increasing m_{jj} bins", "l");
+    leg->AddEntry(ExpTest0, " Test1: BDT instead of m_{jj}", "l");
+    leg->AddEntry(ExpTest1, " Test2: reducing m_{T} bins", "l");
+    leg->AddEntry(ExpTest2, " Test3: increasing m_{T} bins", "l");
+    leg->AddEntry(ExpTest3, " Test4: increasing m_{jj} bins", "l");
+    leg->AddEntry(ExpTest4, " Test5: fitting WW/WZ normalization", "l");
   }
   else if(ratio == 2){
     leg->AddEntry(ExpTest0, " H^{++} #rightarrow W^{+}W^{+} #rightarrow l#nul#nu", "l");

@@ -2,17 +2,17 @@
 
 #grep -e "r_s0 <" -e "r_s1 <" log_runFits_*|awk '{xs=1;if($1=="sample:")printf("%19s ",$2);else printf("%11.6f ",$5*xs);if(NR%6==0)printf("\n");if(NR%36==0)printf("--------------\n");}'|awk '(NR%7==1){print$0}' > lll1
 #cat lll1|awk '{printf("%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",sqrt($1),1,sqrt($4),sqrt($2),sqrt($3),sqrt($5),sqrt($6))}'
-root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hpp_hp.txt" ,"ana_hpp_hp" ,2019,200,2000,0,0,"",0,15,"pdf")';
+root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hpp_hp.txt" ,"ana_hpp_hp" ,2019,200,2000,0,0,"",1,15,"pdf")';
 
 #grep -e "r_s0 <" -e "r_s1 <" log_runFits_*|awk '{xs=1;if($1=="sample:")printf("%19s ",$2);else printf("%11.6f ",$5*xs);if(NR%6==0)printf("\n");if(NR%36==0)printf("--------------\n");}'|awk '(NR%7==2){print$0}' > lll1
 #cat > lll2
 #paste lll?|awk '{printf("%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",$1*$7,$7,$4*$7,$2*$7,$3*$7,$5*$7,$6*$7)}'
-root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hpp_ww.txt" ,"ana_hpp_ww" ,2019,200,2000,0,1,"",0,16,"pdf")';
+root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hpp_ww.txt" ,"ana_hpp_ww" ,2019,200,2000,0,1,"",1,16,"pdf")';
 
 #grep -e "r_s0 <" -e "r_s1 <" log_runFits_*|awk '{xs=1;if($1=="sample:")printf("%19s ",$2);else printf("%11.6f ",$5*xs);if(NR%6==0)printf("\n");if(NR%36==0)printf("--------------\n");}'|awk '(NR%7==3){print$0}' > lll1
 #cat > lll2
 #paste lll?|awk '{printf("%9.6f %9.6f %9.6f %9.6f %9.6f %9.6f %9.6f\n",$1*$7,$7,$4*$7,$2*$7,$3*$7,$5*$7,$6*$7)}'
-root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hp_wz.txt" ,"ana_hp_wz" ,2019,200,2000,0,1,"",0,17,"pdf")';
+root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_hp_wz.txt" ,"ana_hp_wz" ,2019,200,2000,0,1,"",1,17,"pdf")';
 
 root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_zhg_mt_comb.txt" ,"ana_zhg_mt_comb" ,2019,125,300,0,1,"ZH #rightarrow 2l+p_{T}^{miss}+#gamma",1,10,"pdf")';
 root -l -b -q PlotLimit_ZHinv_run2.C+'("inputs_runII/ana_monoz_unparticles.txt" ,"ana_monoz_unparticles" ,2019,1.00,2.20,0,1,"spin = 0, #lambda = 1",1,11,"pdf")';

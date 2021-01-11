@@ -380,7 +380,7 @@ void PlotLimit_ZHinv_run2(
   double size = 0.035;
   if     (ratio == 11) {legX1 = 0.55; legX2 = 0.75; }
   else if(ratio == 14) {legX1 = 0.70; legX2 = 0.80; }
-  else if(ratio == 15) {legX1 = 0.16; legX2 = 0.36; legY1 = 0.46; legY2 = 0.66; size = 0.030;}
+  else if(ratio == 15) {legX1 = 0.16; legX2 = 0.36; legY1 = 0.56; legY2 = 0.76; size = 0.030;}
   TLegend* leg = new TLegend(legX1, legY1, legX2, legY2, "");
 
   leg->SetBorderSize(   0);
@@ -407,8 +407,8 @@ void PlotLimit_ZHinv_run2(
   else if(ratio == 13) leg->AddEntry(ExpTheory, " 0.05 #times #sigma_{VBF}","l");
   else if(ratio == 14) leg->AddEntry(ExpTheory, Form(" Theory, %s",addText.c_str()),"l");
   else if(ratio == 15) {  leg->AddEntry( ExclTH   , "#Gamma(H^{#pm})/#it{m}(H^{#pm}) > 0.1",  "F" ); }
-  else if(ratio == 16) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{++}}"),"l");
-  else if(ratio == 17) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{+}}"),"l");
+  else if(ratio == 16) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{++}}, S_{H} = 1"),"l");
+  else if(ratio == 17) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{+}}, S_{H} = 1"),"l");
   else                 leg->AddEntry(ExpTheory, " #sigma_{qq #rightarrow ZH}^{SM}","l");
   if(ratio == 5)  leg->AddEntry(Dummy,     " #sigma #bf{#it{#Beta}}(H #rightarrow inv.)/#sigma_{SM} < 0.45 (0.44) at 95% CL","l");
 

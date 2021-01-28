@@ -210,7 +210,7 @@ void PlotLimit_ZHinv_run2(
   ExpBand95->GetXaxis()->SetLabelSize  (0.040);
   ExpBand95->GetXaxis()->SetNdivisions (  505);
   ExpBand95->GetXaxis()->SetTitleFont  (   42);
-  ExpBand95->GetXaxis()->SetTitleOffset(  0.9);
+  ExpBand95->GetXaxis()->SetTitleOffset( 1.00);
   ExpBand95->GetXaxis()->SetTitleSize  (0.050);
   ExpBand95->GetYaxis()->SetLabelFont  (   42);
   ExpBand95->GetYaxis()->SetLabelOffset(0.010);

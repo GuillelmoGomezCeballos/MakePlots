@@ -240,8 +240,7 @@ void PlotEfficiency(
   Float_t uxmax = canvas->GetUxmax();
   Float_t uymin = canvas->GetUymin();
 
-  //if(year==2019&&ratio==13) CMS_lumi(canvas, 2020, 1); 
-  //else CMS_lumi(canvas, year, 1);
+  CMS_lumi(canvas, year, 1);
 
   double legX1 = 0.40; double legX2 = 0.70;
   double legY1 = 0.66; double legY2 = 0.88;

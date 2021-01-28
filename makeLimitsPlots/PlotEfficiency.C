@@ -129,8 +129,8 @@ void PlotEfficiency(
   float ey_test2[npoints];
   float ey_test3[npoints];
   float ey_test4[npoints];
-  float rel_unc = 0;
-  if(ratio == 2) rel_unc = 0.10;
+  float rel_unc[2] = {0, 0};
+  if(ratio == 2) {rel_unc[0] = 0.0833; rel_unc[1] = 0.0905;}
 
   for (UInt_t i=0; i<npoints; ++i) {
 
@@ -143,11 +143,11 @@ void PlotEfficiency(
     y_test3[i] = vTest3.at(i);
     y_test4[i] = vTest4.at(i);
 
-    ey_test0[i] = vTest0.at(i)*rel_unc;
-    ey_test1[i] = vTest1.at(i)*rel_unc;
-    ey_test2[i] = vTest2.at(i)*rel_unc;
-    ey_test3[i] = vTest3.at(i)*rel_unc;
-    ey_test4[i] = vTest4.at(i)*rel_unc;
+    ey_test0[i] = vTest0.at(i)*rel_unc[0];
+    ey_test1[i] = vTest1.at(i)*rel_unc[1];
+    ey_test2[i] = vTest2.at(i)*rel_unc[1];
+    ey_test3[i] = vTest3.at(i)*rel_unc[1];
+    ey_test4[i] = vTest4.at(i)*rel_unc[1];
 
     if (y_test0[i] > max && y_test0[i] < theMax) max = y_test0[i];
     if (y_test1[i] > max && y_test1[i] < theMax) max = y_test1[i];

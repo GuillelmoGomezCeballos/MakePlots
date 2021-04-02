@@ -174,11 +174,15 @@ void PlotEfficiency(
   //----------------------------------------------------------------------------
   ExpTest0->SetTitle("");
 
-  if   (ratio == 2) ExpTest0->GetXaxis()->SetTitle("m_{H_{5}} [GeV]");
-  else              ExpTest0->GetXaxis()->SetTitle("m_{H_{5}} [GeV]");
+  if     (ratio == 0 || ratio == 1 || ratio == 2) ExpTest0->GetXaxis()->SetTitle("m_{H_{5}} [GeV]");
+  else if(ratio == 3 || ratio == 4 || ratio == 5) ExpTest0->GetXaxis()->SetTitle("Luminosity [fb^{-1}]");
+  else                                            ExpTest0->GetXaxis()->SetTitle("X [GeV]");
 
   if     (ratio == 0 || ratio == 1) ExpTest0->GetYaxis()->SetTitle("Expected limit ratio w.r.t. to default");
   else if(ratio == 2)               ExpTest0->GetYaxis()->SetTitle("Acceptance #times efficiency");
+  else if(ratio == 3)               ExpTest0->GetYaxis()->SetTitle("Expected significance");
+  else if(ratio == 4 || ratio == 5) ExpTest0->GetYaxis()->SetTitle("Expected uncertainty");
+  else                              ExpTest0->GetYaxis()->SetTitle("Y");
 
   ExpTest0->GetXaxis()->SetLabelFont  (   42);
   ExpTest0->GetXaxis()->SetLabelOffset(0.010);
@@ -229,6 +233,7 @@ void PlotEfficiency(
   }
   else {
     theRange[0] = TMath::Max(min-0.06,0.0); theRange[1] = max+0.10;
+    if(ratio == 3 || ratio == 4 || ratio == 5) theRange[0] = 0;
   }
   ExpTest0->GetYaxis()->SetRangeUser(theRange[0],theRange[1]);
 
@@ -245,10 +250,20 @@ void PlotEfficiency(
   double legX1 = 0.40; double legX2 = 0.70;
   double legY1 = 0.66; double legY2 = 0.88;
   double size = 0.030;
-  TString label = "TEST";
+  TString label = "";
   if     (ratio == 0) label = "H^{++} search";
   else if(ratio == 1) label = "H^{+} search";
   else if(ratio == 2) label = "H^{++}/H^{+}";
+
+  if(ratio == 3){
+    legX1 = 0.50; legX2 = 0.70;
+    legY1 = 0.30; legY2 = 0.40;
+  }
+  else if(ratio == 4 || ratio == 5){
+    legX1 = 0.40; legX2 = 0.70;
+    legY1 = 0.50; legY2 = 0.70;
+  }
+
   TLegend* leg = new TLegend(legX1, legY1, legX2, legY2, label.Data());
 
   leg->SetBorderSize(   0);
@@ -258,8 +273,8 @@ void PlotEfficiency(
   leg->SetTextSize  (size);
 
   if(strcmp(title.c_str(),"") != 0) {
-    if(ratio == 13) DrawTLatex(0.216, 0.75, 0.035, title.c_str());
-    else            DrawTLatex(legX1, 0.60, 0.035, title.c_str());
+    if(ratio == 3) DrawTLatex(0.300, 0.40, 0.035, title.c_str());
+    else           DrawTLatex(legX1, 0.60, 0.035, title.c_str());
   }
 
   if     (ratio == 0 || ratio == 1){
@@ -272,6 +287,14 @@ void PlotEfficiency(
   else if(ratio == 2){
     leg->AddEntry(ExpTest0, " H^{++} #rightarrow W^{+}W^{+} #rightarrow l#nul#nu", "l");
     leg->AddEntry(ExpTest1, " H^{+} #rightarrow W^{+}Z #rightarrow 3l#nu", "l");
+  }
+  else if(ratio == 3 || ratio == 5){
+    leg->AddEntry(ExpTest0, " WW rest-frame", "l");
+    leg->AddEntry(ExpTest1, " pp rest-frame", "l");
+  }
+  else if(ratio == 4){
+    leg->AddEntry(ExpTest0, " EW W^{+}W^{+}", "l");
+    leg->AddEntry(ExpTest1, " EW WZ", "l");
   }
   else {
   }

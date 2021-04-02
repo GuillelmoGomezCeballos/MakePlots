@@ -78,6 +78,10 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     {
       lumiText += "13 TeV";
     }
+  else if ( iPeriod==2025 )
+    {
+      lumiText += "14 TeV";
+    }
   else if ( iPeriod==7 )
     { 
       if( outOfFrame ) lumiText += "#scale[0.85]{";

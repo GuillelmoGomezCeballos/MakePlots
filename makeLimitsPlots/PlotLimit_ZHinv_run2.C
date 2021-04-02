@@ -197,9 +197,9 @@ void PlotLimit_ZHinv_run2(
   if (ratio ==12) ExpBand95->GetYaxis()->SetTitle("#sigma(pp #rightarrow GZ) [pb]");
   if (ratio ==13) ExpBand95->GetYaxis()->SetTitle("#sigma_{VBF} #times #bf{#it{#Beta}}(H #rightarrow inv.+#gamma) [pb]");
   if (ratio ==14) ExpBand95->GetYaxis()->SetTitle("#sigma / #sigma_{aQGC}");
-  if (ratio ==15) ExpBand95->GetYaxis()->SetTitle("S_{H}");
+  if (ratio ==15) ExpBand95->GetYaxis()->SetTitle("s_{H}");
   if (ratio ==16) ExpBand95->GetYaxis()->SetTitle("#sigma_{VBF}^{H^{++}} #times #bf{#it{#Beta}}(H^{++} #rightarrow W^{#pm}W^{#pm}) [pb]");
-  if (ratio ==17) ExpBand95->GetYaxis()->SetTitle("#sigma_{VBF}^{H^{+}} #times #bf{#it{#Beta}}(H^{+} #rightarrow WZ) [pb]");
+  if (ratio ==17) ExpBand95->GetYaxis()->SetTitle("#sigma_{VBF}^{H^{+}} #times #bf{#it{#Beta}}(H^{+} #rightarrow W^{#pm}Z) [pb]");
   if (ratio == 6 || ratio == 2 ||
       ratio == 9) ExpBand95->GetYaxis()->SetTitle("#sigma #times #bf{#it{#Beta}} / #sigma_{SM}");
   if (ratio == 7) ExpBand95->GetYaxis()->SetTitle("#sigma #times #bf{#it{#Beta}} [fb]");
@@ -406,9 +406,9 @@ void PlotLimit_ZHinv_run2(
   else if(ratio == 12) leg->AddEntry(ExpTheory, Form(" Theory, LO, n = %s",addText.c_str()),"l");
   else if(ratio == 13) leg->AddEntry(ExpTheory, " 0.05 #times #sigma_{VBF}","l");
   else if(ratio == 14) leg->AddEntry(ExpTheory, Form(" Theory, %s",addText.c_str()),"l");
-  else if(ratio == 15) {  leg->AddEntry( ExclTH   , "#Gamma(H^{#pm})/#it{m}(H^{#pm}) > 0.1",  "F" ); }
-  else if(ratio == 16) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{++}}, S_{H} = 1"),"l");
-  else if(ratio == 17) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{+}}, S_{H} = 1"),"l");
+  else if(ratio == 15) {  leg->AddEntry( ExclTH   , "#Gamma(H_{5})/#it{m}(H_{5}) > 0.1",  "F" ); }
+  else if(ratio == 16) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{++}}, s_{H} = 1"),"l");
+  else if(ratio == 17) leg->AddEntry(ExpTheory, Form("#sigma_{GM}^{H^{+}}, s_{H} = 1"),"l");
   else                 leg->AddEntry(ExpTheory, " #sigma_{qq #rightarrow ZH}^{SM}","l");
   if(ratio == 5)  leg->AddEntry(Dummy,     " #sigma #bf{#it{#Beta}}(H #rightarrow inv.)/#sigma_{SM} < 0.45 (0.44) at 95% CL","l");
 
